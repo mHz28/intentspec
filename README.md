@@ -1,104 +1,105 @@
-# IntentSpec: Spec-Driven Development & Context Engineering Framework
+# IntentSpec: Executable Spec-TDD Engine for AI Coding Agents
 
-IntentSpec is an open-source engineering framework designed to bridge the gap between human business intent and non-deterministic AI code generation. By combining Spec-Driven Development (SDD) with Context Engineering, IntentSpec replaces chaotic vibe-coding with deterministic, test-verifiable software architecture.
+> **IntentSpec** is an open-source, code-first framework that turns natural language specifications into **executable unit tests and context-engineered guardrails** for AI coding agents (Cursor, Windsurf, Claude Code). It bridges the gap between high-level product intent and deterministic AI code execution.
 
----
-
-## The Core Philosophy
-
-When developers interact with AI coding assistants (Cursor, Windsurf, Claude Code, Cline/RooCode), three primary failure modes occur:
-1. Scope Creep & Hallucination: AI agents invent unrequested features or make unverified assumptions about business logic.
-2. Context Degradation & Token Waste: Flooding the AI model context window with irrelevant files leads to the lost-in-the-middle phenomenon and degraded reasoning.
-3. Architectural Drift: Repeated ad-hoc prompt edits cause code to drift away from documentation and original security contracts.
-
-IntentSpec enforces a Spec-Anchored Lifecycle: Code is never generated directly from unstructured natural language prompts. Instead, executable specifications (.spec.md) act as living contracts, automated tests (.test.ts) establish mathematical Red baselines, and context rules (.cursorrules) constrain agent memory.
+Repository: https://github.com/mHz28/intentspec
 
 ---
 
-## Repository Topology
+## 1. Positioning & Core Philosophy
 
-An IntentSpec-compliant repository structures intent, verification, and rules alongside application code:
+### Where IntentSpec Fits in the SDD Stack
 
+Modern AI software development is dividing into two distinct layers:
 
+1. **Upstream Product Intent (PM Layer - e.g., `intentspec.org`, PRDs, Issue Trackers)**: Captures business goals, user friction, and product requirements.
+2. **Downstream Execution Engine (Engineering Layer - IntentSpec)**: Turns requirements into a deterministic, test-driven execution loop (`.spec.md` + `.test.ts` + `.cursorrules`) that guarantees AI agents write minimal, passing production code without "vibe coding" or "documentation bloat."
 
----
+```text
+[ Upstream Product Intent ] ➔ [ BDD Spec Contract (.spec.md) ] ➔ [ Failing Tests (.test.ts) ] ➔ [ Context Rules (.cursorrules) ] ➔ [ AI Code Generation ]
+```
 
-## 1. Greenfield Feature Build Workflow (Initial Development)
+### Eliminating the "Markdown Bloat" of Heavy SDD Tools
 
-Building a new feature in IntentSpec follows a strict 4-phase progression:
+Heavy Spec-Driven Development tools often generate 5–10 verbose Markdown files per feature, leading to "documentation review fatigue" and causing AI agents to over-engineer solutions with unnecessary abstractions. 
 
-<p align="center">
-  <img src="flow_images/greenfield_feature_build_workflow.jpg" width="800" alt="Greenfield Feature Build Workflow" />
-</p>
-
-### Phase Breakdown
-
-| Phase | Responsibility | Key Deliverable / Gate |
-| :--- | :--- | :--- |
-| Phase 1: Spec Contract | Human Developer | .spec/SPEC-AUTH-001.md containing BDD scenarios, security parameters, and context limits. |
-| Phase 2: Spec-TDD Baseline | Human Developer / AI | tests/unit/*.test.ts implementing assertions for all BDD scenarios (RED state). |
-| Phase 3: Context Rules | Human Developer | .cursorrules defining file load rules, skeleton trimming, and token constraints. |
-| Phase 4: AI Execution | AI Coding Agent | Implementation code in src/ to turn all tests GREEN. |
+**IntentSpec solves this with Spec-TDD**:
+* **Executable Proof of "Done"**: Instead of trusting text tasks alone, IntentSpec establishes a failing automated test baseline (**RED state**) *before* the AI generates application code.
+* **Minimal Code Generation**: The test assertions act as a mathematical boundary—forcing the AI agent to write the exact, minimal code required to turn tests **GREEN**.
+* **80% Token Savings**: Uses **Skeleton Trimming** in `.cursorrules` to strip function bodies and feed only interface signatures to the model.
 
 ---
 
-## 2. Spec-Anchored Change & Refactoring Workflow
+## 2. Repository Topology
 
-When business requirements evolve (e.g., changing token expiration rules or adding IP security blocklists), changes flow through a 5-step refactoring loop to ensure documentation never lags behind code:
-
-<p align="center">
-  <img src="flow_images/spec_anchored_change_workflow.jpg" width="800" alt="Spec-Anchored Change Workflow" />
-</p>
-
-### The 5 Steps of Feature Evolution
-1. Update Spec Contract First (.spec.md): Modify business rules, TTLs, and add new BDD scenarios to the spec file.
-2. Update Test Suite (.test.ts): Add or update test assertions to reflect the new requirements. Run npm test to re-establish the RED failing state.
-3. Adjust Context Directives (.cursorrules): Add any new service interface signatures or dependencies to the AI context rules.
-4. Execute AI Refactoring Prompt: Direct the AI agent to make the updated test suite pass using the living spec contract.
-5. Verification & Diff Review: Verify all tests pass (GREEN state) and inspect git diff to ensure zero scope creep.
-
----
-
-## 3. Feature Runtime & Security Execution Flow
-
-The reference implementation in this repository (SPEC-AUTH-001) demonstrates a production-grade Password Reset Request endpoint incorporating critical security mechanisms:
-
-<p align="center">
-  <img src="flow_images/password_reset_request_flow.jpg" width="800" alt="Password Reset Request Flow" />
-</p>
-
-### Key Security Safeguards
-* IP Security Blocklist: Intercepts blacklisted IPs before processing, returning 403 Forbidden.
-* Rate Limiting: Restricts reset attempts to prevent DoS attacks, returning 429 Too Many Requests.
-* User Enumeration Prevention: Returns identical 200 OK messages for both registered and unregistered email addresses.
-* Token Security: Generates high-entropy reset tokens, stores only SHA-256 hashes in memory/DB with a strict 15-minute TTL, and dispatches the raw link via email.
+```text
+intentspec/
+├── .spec/
+│   └── SPEC-AUTH-001-password-reset.md   # Living Specification Contract (BDD)
+├── tests/
+│   └── unit/
+│       └── password-reset-request.test.ts # Automated Test Baseline (TDD)
+├── .cursorrules                          # Context Engineering Guardrails & Rules
+├── flow_images/                          # Process Diagrams
+│   ├── greenfield_feature_build_workflow.jpg
+│   ├── spec_anchored_change_workflow.jpg
+│   └── password_reset_request_flow.jpg
+└── src/                                  # Pure Application Implementation Code
+```
 
 ---
 
-## 4. Context Engineering Best Practices
+## 3. The 4-Phase Greenfield Workflow
 
-IntentSpec manages the LLM token budget like premium real estate using five core rules defined in .cursorrules:
+![Greenfield Build Workflow](flow_images/greenfield_feature_build_workflow.jpg)
 
-1. Relevance-First Selection: Only load files directly mentioned in the spec's Must-Load block.
-2. Skeleton Trimming: Strip internal function bodies from imports, exposing only interface signatures to the model.
-3. Phased Loading: Provide context in progressive stages (Spec -> Tests -> Code).
-4. Targeted Isolation: Isolate independent modules so the AI cannot modify unrelated files.
-5. No Spec Manipulation: The AI agent is strictly forbidden from modifying .spec.md or altering test assertions.
+### Phase 1: Draft the BDD Spec Contract (`.spec/SPEC-AUTH-001-password-reset.md`)
+Define explicit BDD scenarios (`Given/When/Then`), security boundaries (e.g., enumeration protection, rate limits), and data formats before writing application code.
+
+### Phase 2: Lock in the Executable Test Baseline (`tests/unit/password-reset-request.test.ts`)
+Write failing automated unit tests reflecting the specification criteria. Run `npm test` to confirm the **RED (failing) state**.
+
+### Phase 3: Configure Context Directives (`.cursorrules`)
+Enforce **Skeleton Trimming** (loading interface declarations while stripping function bodies) and memory boundaries to optimize the AI agent's token budget.
+
+### Phase 4: Targeted AI Execution
+Hand the agent a constrained execution prompt to generate the implementation in `src/` and achieve a verified **GREEN (passing) state**.
 
 ---
 
-## Quick Start & Verification
+## 4. The 5-Step Refactoring Workflow (Managing Changes)
 
-### Prerequisites
-* Node.js v18+
-* npm v9+
+![Spec-Anchored Refactoring Workflow](flow_images/spec_anchored_change_workflow.jpg)
 
-### Installation & Setup
+When business or security requirements evolve:
+1. **Update Spec Contract First**: Modify BDD acceptance criteria in `.spec.md`.
+2. **Update Test Suite**: Modify test assertions in `.test.ts` to re-establish the **RED State**.
+3. **Adjust Context Directives**: Update interface signatures or file mappings in `.cursorrules`.
+4. **Execute AI Refactoring Prompt**: Have the agent refactor logic in `src/`.
+5. **Verify & Audit**: Confirm all tests turn **GREEN** and perform a git diff audit against the spec contract.
 
-1. Clone the repository
-2. Install dependencies: 
-3. Run the automated test suite: 
+---
 
-### Example Test Output
+## 5. Reference Implementation & Security Guardrails
 
+The included reference walkthrough (`SPEC-AUTH-001`) demonstrates a production password reset request endpoint enforcing critical security boundaries:
+* **IP Security Blocklist**: Intercepts blacklisted IPs with HTTP `403 Forbidden`.
+* **Rate-Limiting**: Enforces max 3 requests per 15-minute window (`429 Too Many Requests`).
+* **Enumeration Prevention**: Returns identical HTTP `200 OK` messages regardless of whether the email identity exists.
+* **Cryptographic Safety**: Hashes reset tokens with SHA-256 before storage and dispatches raw links asynchronously.
 
+---
+
+## 6. Quickstart
+
+```bash
+cd intentspec
+npm install
+npm test
+```
+
+---
+
+## License
+
+Distributed under the MIT License.
