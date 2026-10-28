@@ -1,0 +1,23 @@
+{
+  "name": "intentspec",
+  "version": "1.0.0",
+  "description": "Spec-Driven Development &amp; Context Engineering Framework Example",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.11.0",
+    "@types/supertest": "^6.0.3",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4",
+    "ts-jest": "^29.4.15",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "express": "^4.22.3"
+  }
+}
